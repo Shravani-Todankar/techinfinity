@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Creative Agency Portfolio - Infinity Shape + 3D Zoom Scroll</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  
+  body, html {
+    margin: 0; 
+    padding: 0; 
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  /* ===== FIRST SECTION STYLES ===== */
+  #section-one {
+    height: 120vh;
+    background: #f5f8fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  /* Top text styling - initially hidden */
+  #top-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.1em;
+    overflow: hidden;
+    opacity: 0; /* hidden initially */
+    width: 85%;
+    text-align: center;
+    line-height: 1.1;
+    font-weight: 700;
+    font-size: 4rem;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    pointer-events: none;
+    user-select: none;
+    z-index: 20;
+    margin-bottom: 80px;
+    padding: 20px 0;
+    position: relative;
+  }
+
+  /* First line container */
+  .text-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5ch;
+    margin-bottom: 8px;
+  }
+
+  /* Regular text styling */
+  #top-text span.normal {
+    font-style: normal;
+    font-weight: 400;
+    font-family: 'Helvetica Neue', sans-serif;
+    color: #000;
+  }
+
+  /* Italic styling */
+  #top-text span.italic {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 4rem;
+    font-family: 'DM Serif Display', serif;
+    color: #000;
+  }
+
+  /* Each letter span for split text animation */
+  #top-text span span {
+    display: inline-block;
+    transform: translateY(100%);
+    opacity: 0;
+    animation-fill-mode: forwards;
+    animation-name: slideUpReveal;
+    animation-timing-function: ease-out;
+    animation-duration: 0.6s;
+  }
+
+  @keyframes slideUpReveal {
+    to {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+  }
+
+  /* Infinity shape container */
+  #infinity-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0;
+  }
+
+  .img-item {
+    position: absolute;
+    width: 60px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translate(var(--repel-x, 0), var(--repel-y, 0)) translate(-50%, -50%) rotateY(0deg);
+    transition:
+      opacity 1s ease,
+      top 1.5s ease,
+      left 1.5s ease,
+      transform 1.5s ease;
+    box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+    cursor: pointer;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  #container.slow-transition .img-item {
+    transition:
+      opacity 1s ease,
+      top 4s ease,
+      left 4s ease,
+      transform 4s ease;
+  }
+
+  #container.infinity-formed .img-item {
+    transition: transform 0.6s ease;
+  }
+
+  #container.infinity-formed .img-item.flip-active {
+    animation: flipAnimation 0.6s forwards;
+    z-index: 10;
+    cursor: pointer;
+  }
+
+  @keyframes flipAnimation {
+    0% {
+      transform: translate(var(--repel-x, 0), var(--repel-y, 0)) translate(-50%, -50%) rotateY(0deg);
+    }
+    50% {
+      transform: translate(var(--repel-x, 0), var(--repel-y, 0)) translate(-50%, -50%) rotateY(90deg);
+    }
+    100% {
+      transform: translate(var(--repel-x, 0), var(--repel-y, 0)) translate(-50%, -50%) rotateY(0deg);
+    }
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #666;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .scroll-indicator.show {
+    opacity: 1;
+  }
+
+  .scroll-arrow {
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid #666;
+    border-bottom: 2px solid #666;
+    transform: rotate(45deg);
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0) rotate(45deg);
+    }
+    40% {
+      transform: translateY(-10px) rotate(45deg);
+    }
+    60% {
+      transform: translateY(-5px) rotate(45deg);
+    }
+  }
+
+  /* ===== SECOND SECTION STYLES ===== */
+  #section-two {
+    background: #f5f8fa;
+    height: 400vh; /* enough scroll for GSAP */
+    color: white;
+    position: relative;
+  }
+
+  .dm-zoom-reveal-wrapper-2 {
+    position: relative;
+    height: 100vh;
+    perspective: 1400px;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+  }
+
+  .e-con-inner {
+    width: 100vw;
+    max-width: 900px;
+    height: 100vh;
+    position: relative;
+    transform-style: preserve-3d;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .circle-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 700px;
+    height: 670px;
+    border: 3px solid rgba(0, 0, 0, 0.428);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow:
+      0 0 60px rgba(255 255 255 / 0.15),
+      inset 0 0 30px rgba(255 255 255 / 0.1);
+    z-index: 5;
+    will-change: transform, opacity;
+    opacity: 0; /* Initially hidden */
+  }
+
+  .center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.8rem;
+    font-weight: 700;
+    text-align: center;
+    color: #000000;
+    opacity: 0;
+    z-index: 20;
+    pointer-events: none;
+    user-select: none;
+    text-shadow: 0 0 18px rgba(255,255,255,0.7);
+    max-width: 85vw;
+    line-height: 1.2;
+    mix-blend-mode: screen;
+    will-change: opacity;
+  }
+
+  .dm-zoom-reveal-img-2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    max-width: 80vw;
+    height: 210px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+    opacity: 0;
+    filter: blur(20px);
+    transform-style: preserve-3d;
+    transform-origin: center center;
+    cursor: default;
+    z-index: 1;
+    user-select: none;
+    will-change: transform, opacity, filter;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+
+  /* ===== RESPONSIVE STYLES ===== */
+  @media (max-width: 768px) {
+    #container {
+      padding: 20px 15px;
+    }
+    #top-text {
+      font-size: 2.5rem;
+      margin-bottom: 60px;
+    }
+    #top-text span.italic {
+      font-size: 2.5rem;
+    }
+    .text-line {
+      gap: 0.3ch;
+      margin-bottom: 6px;
+    }
+    #infinity-container {
+      height: 300px;
+      margin-top: 40px;
+    }
+    
+    .center-text {
+      font-size: 2.2rem;
+    }
+    
+    .circle-ring {
+      width: 500px;
+      height: 480px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #container {
+      padding: 15px 10px;
+    }
+    #top-text {
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+    #top-text span.italic {
+      font-size: 2rem;
+    }
+    #infinity-container {
+      height: 250px;
+      margin-top: 30px;
+    }
+    
+    .center-text {
+      font-size: 1.8rem;
+    }
+    
+    .circle-ring {
+      width: 350px;
+      height: 330px;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- FIRST SECTION: Infinity Shape Formation -->
+  <section id="section-one">
+    <div id="container">
+      <div id="top-text"></div>
+      <div id="infinity-container"></div>
+      <div class="scroll-indicator">
+        <span>Scroll to continue</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECOND SECTION: 3D Zoom Scroll -->
+  <section id="section-two">
+    <div class="dm-zoom-reveal-wrapper-2">
+      <div class="e-con-inner">
+        <div class="circle-ring"></div>
+
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1015/800/600" alt="Image 1" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1016/800/600" alt="Image 2" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1020/800/600" alt="Image 3" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1024/800/600" alt="Image 4" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1027/800/600" alt="Image 5" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1033/800/600" alt="Image 6" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1035/800/600" alt="Image 7" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1037/800/600" alt="Image 8" />
+        <img class="dm-zoom-reveal-img-2" src="https://picsum.photos/id/1040/800/600" alt="Image 9" />
+
+        <div class="center-text">Upgrade Your Video Communication<br>With The Latest Technology</div>
+      </div>
+    </div>
+  </section>
+
+<script>
+  // ===== FIRST SECTION: INFINITY SHAPE ANIMATION =====
+  const container = document.getElementById('container');
+  const infinityContainer = document.getElementById('infinity-container');
+  const topText = document.getElementById('top-text');
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+
+  const imgSrcs = [
+    'https://picsum.photos/id/1011/60/70',
+    'https://picsum.photos/id/1015/60/70',
+    'https://picsum.photos/id/1016/60/70',
+    'https://picsum.photos/id/1018/60/70',
+    'https://picsum.photos/id/1020/60/70',
+    'https://picsum.photos/id/1024/60/70',
+    'https://picsum.photos/id/1027/60/70',
+    'https://picsum.photos/id/1031/60/70',
+    'https://picsum.photos/id/1033/60/70',
+    'https://picsum.photos/id/1035/60/70',
+    'https://picsum.photos/id/1036/60/70',
+    'https://picsum.photos/id/1038/60/70',
+    'https://picsum.photos/id/1040/60/70',
+    'https://picsum.photos/id/1043/60/70',
+    'https://picsum.photos/id/1044/60/70',
+    'https://picsum.photos/id/1049/60/70',
+    'https://picsum.photos/id/1050/60/70',
+    'https://picsum.photos/id/1053/60/70',
+    'https://picsum.photos/id/1057/60/70',
+    'https://picsum.photos/id/1060/60/70',
+    'https://picsum.photos/id/1062/60/70',
+    'https://picsum.photos/id/1063/60/70',
+    'https://picsum.photos/id/1067/60/70',
+    'https://picsum.photos/id/1068/60/70',
+    'https://picsum.photos/id/1071/60/70',
+    'https://picsum.photos/id/1073/60/70',
+    'https://picsum.photos/id/1074/60/70',
+    'https://picsum.photos/id/1080/60/70',
+    'https://picsum.photos/id/1084/60/70',
+    'https://picsum.photos/id/1081/60/70',
+  ];
+
+  let originalPositions = [];
+
+  // Create and append images at random initial positions
+  imgSrcs.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.classList.add('img-item');
+    img.style.top = `${Math.random() * 80 + 5}vh`;
+    img.style.left = `${Math.random() * 90 + 2}vw`;
+    infinityContainer.appendChild(img);
+  });
+
+  const images = [...document.querySelectorAll('.img-item')];
+
+  // Fade in images one by one
+  function fadeInImages(index = 0) {
+    if (index >= images.length) {
+      setTimeout(alignImagesInRow, 1000);
+      return;
+    }
+    images[index].style.opacity = '1';
+    setTimeout(() => fadeInImages(index + 1), 100);
+  }
+
+  // Align images in a horizontal row
+  function alignImagesInRow() {
+    const containerWidth = infinityContainer.clientWidth;
+    const margin = 10;
+    const totalWidth = images.length * (60 + margin) - margin;
+
+    let startX = (containerWidth - totalWidth) / 2;
+
+    images.forEach((img, idx) => {
+      img.style.top = `${infinityContainer.offsetHeight / 2 + 40}px`;
+      img.style.left = `${startX + idx * (60 + margin)}px`;
+      img.style.transform = 'translate(0, 0)';
+    });
+
+    setTimeout(formInfinityShape, 2000);
+  }
+
+  // Form the infinity shape of images
+  function formInfinityShape() {
+    container.classList.add('slow-transition');
+
+    const containerWidth = infinityContainer.clientWidth;
+    const containerHeight = infinityContainer.clientHeight;
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2;
+    const baseSize = Math.min(centerX, centerY) / 2.5;
+    const a = baseSize * 6.5;
+
+    images.forEach((img, idx) => {
+      const t = (idx / images.length) * 2 * Math.PI;
+      const denom = 1 + Math.pow(Math.cos(t), 2);
+      const x = a * Math.sin(t) / denom;
+      const y = a * Math.sin(t) * Math.cos(t) / denom;
+
+      const posX = centerX + x;
+      const posY = centerY + y;
+
+      img.style.left = `${posX}px`;
+      img.style.top = `${posY}px`;
+      img.style.setProperty('--repel-x', '0px');
+      img.style.setProperty('--repel-y', '0px');
+      img.style.transform = `translate(var(--repel-x), var(--repel-y)) translate(-50%, -50%) rotateY(0deg)`;
+
+      originalPositions[idx] = { x: posX, y: posY };
+    });
+
+    setTimeout(() => {
+      container.classList.remove('slow-transition');
+      container.classList.add('infinity-formed');
+
+      animateSplitText(topText);
+      topText.style.opacity = '1';
+      enableRepelAndFlipProximity();
+      
+      // Show scroll indicator after animations complete
+      setTimeout(() => {
+        scrollIndicator.classList.add('show');
+        initializeSecondSection();
+      }, 2000);
+    }, 4000);
+  }
+
+  // Animate the top text split reveal with proper spacing
+  function animateSplitText(textElement) {
+    const firstLine = ['Best', 'Digital', 'Creative'];
+    const secondLine = ['Marketing', 'Agency'];
+
+    textElement.textContent = '';
+
+    let currentIndex = 0;
+
+    // First line
+    const firstLineDiv = document.createElement('div');
+    firstLineDiv.className = 'text-line';
+
+    firstLine.forEach((word, wordIndex) => {
+      const spanWrapper = document.createElement('span');
+      
+      // Set the class based on the word
+      if (word === 'Creative') {
+        spanWrapper.className = 'italic';
+      } else {
+        spanWrapper.className = 'normal';
+      }
+
+      // Split each word into individual letters
+      for (let i = 0; i < word.length; i++) {
+        const letterSpan = document.createElement('span');
+        letterSpan.textContent = word[i];
+        letterSpan.style.animationDelay = `${currentIndex * 0.05}s`;
+        currentIndex++;
+        spanWrapper.appendChild(letterSpan);
+      }
+
+      firstLineDiv.appendChild(spanWrapper);
+    });
+
+    textElement.appendChild(firstLineDiv);
+
+    // Second line
+    const secondLineDiv = document.createElement('div');
+    secondLineDiv.className = 'text-line';
+
+    secondLine.forEach((word) => {
+      const spanWrapper = document.createElement('span');
+      spanWrapper.className = 'normal';
+
+      // Split each word into individual letters
+      for (let i = 0; i < word.length; i++) {
+        const letterSpan = document.createElement('span');
+        letterSpan.textContent = word[i];
+        letterSpan.style.animationDelay = `${currentIndex * 0.05}s`;
+        currentIndex++;
+        spanWrapper.appendChild(letterSpan);
+      }
+
+      secondLineDiv.appendChild(spanWrapper);
+    });
+
+    textElement.appendChild(secondLineDiv);
+  }
+
+  // Enable repel and flip effect on mouse proximity
+  function enableRepelAndFlipProximity() {
+    const maxRepelDistance = 100;
+    const maxRepelAmount = 35;
+
+    infinityContainer.addEventListener('mousemove', (e) => {
+      const rect = infinityContainer.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      images.forEach((img, idx) => {
+        const orig = originalPositions[idx];
+        const dx = orig.x - mouseX;
+        const dy = orig.y - mouseY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (dist < maxRepelDistance) {
+          const repelFactor = (maxRepelDistance - dist) / maxRepelDistance;
+          const offsetX = (dx / dist) * repelFactor * maxRepelAmount;
+          const offsetY = (dy / dist) * repelFactor * maxRepelAmount;
+
+          img.style.setProperty('--repel-x', `${offsetX}px`);
+          img.style.setProperty('--repel-y', `${offsetY}px`);
+        } else {
+          img.style.setProperty('--repel-x', '0px');
+          img.style.setProperty('--repel-y', '0px');
+        }
+
+        if (dist < maxRepelDistance) {
+          img.classList.add('flip-active');
+        } else {
+          img.classList.remove('flip-active');
+        }
+      });
+    });
+
+    infinityContainer.addEventListener('mouseleave', () => {
+      images.forEach(img => {
+        img.style.setProperty('--repel-x', '0px');
+        img.style.setProperty('--repel-y', '0px');
+        img.classList.remove('flip-active');
+      });
+    });
+  }
+
+  // ===== SECOND SECTION: 3D ZOOM SCROLL ANIMATION =====
+  function initializeSecondSection() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const imgs = gsap.utils.toArray('.dm-zoom-reveal-img-2');
+    const circle = document.querySelector('.circle-ring');
+    const text = document.querySelector('.center-text');
+    const sectionTwo = document.querySelector('#section-two');
+
+    // Circle Ring Fade In Trigger - Separate from main animation
+    gsap.to(circle, {
+      opacity: 1,
+      duration: 1.2,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: sectionTwo,
+        start: "top 80%", // Trigger when section is 20% from top of viewport
+        end: "top 50%",
+        toggleActions: "play none none reverse",
+      }
+    });
+
+    const targetPositions = [
+      {x: -300, y: -200},
+      {x: 300, y: -220},
+      {x: -350, y: 100},
+      {x: 350, y: 140},
+      {x: -200, y: 300},
+      {x: 200, y: 320},
+      {x: 0, y: -350},
+      {x: 0, y: 350},
+      {x: 0, y: 0}
+    ];
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionTwo,
+        start: "top top",
+        end: "+=300vh",
+        scrub: 1,
+        pin: ".dm-zoom-reveal-wrapper-2",
+        anticipatePin: 1,
+      }
+    });
+
+    tl.to(circle, {
+      scale: 0.22,
+      opacity: 0.15,
+      duration: 1.5,
+      ease: "power1.inOut",
+    }, 0);
+
+    tl.to(text, {
+      opacity: 1,
+      duration: 1.5,
+      ease: "power1.inOut",
+    }, 0);
+
+    imgs.forEach((img, i) => {
+      tl.to(img, {
+        duration: 1,
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        ease: "power3.out",
+        zIndex: 10 + i,
+        x: targetPositions[i].x,
+        y: targetPositions[i].y,
+      }, 0.5 + i * 0.4);
+    });
+
+    imgs.forEach((img, i) => {
+      const pos = targetPositions[i];
+      const factor = 3.5;
+
+      tl.to(img, {
+        duration: 1,
+        x: pos.x * factor,
+        y: pos.y * factor,
+        scale: 1.15 + i * 0.1,
+        ease: "power4.in",
+        opacity: 1,
+        filter: "blur(0px)",
+        zIndex: 0,
+      }, 2 + i * 0.5);
+
+      // Fade out after moving outside the screen
+      tl.to(img, {
+        duration: 0.6,
+        opacity: 0,
+        ease: "power1.out",
+      }, 3 + i * 0.5);
+    });
+
+    tl.to([text, circle], {
+      opacity: 0,
+      duration: 0.8,
+      ease: "power1.out",
+    }, 4.5);
+  }
+
+  // Initialize the first section
+  window.onload = () => {
+    fadeInImages();
+  };
+</script>
+</body>
+</html>
