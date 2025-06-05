@@ -232,15 +232,11 @@
     /* ===== SECOND SECTION STYLES ===== */
     #section-two {
       background: transparent;
-      /* Keep transparent */
-      height: 400vh;
-      /* enough scroll for GSAP */
+      height: 120vh;
       color: white;
       position: relative;
       opacity: 0;
-      /* Initially hidden */
       pointer-events: none;
-      /* Prevent interaction when hidden */
       transition: opacity 0.5s ease;
     }
 
@@ -251,7 +247,7 @@
 
     .dm-zoom-reveal-wrapper-2 {
       position: relative;
-      height: 150vh;
+      height: 100vh;
       perspective: 1400px;
       overflow: visible;
       display: flex;
@@ -259,6 +255,7 @@
       align-items: center;
       user-select: none;
       background: transparent;
+      top: 0;
       /* Ensure wrapper is also transparent */
     }
 
@@ -356,7 +353,7 @@
 
     /* ===== THIRD SECTION STYLES ===== */
     #section-three {
-      height: 100vh;
+      height: 200vh;
       background: white;
       display: flex;
       justify-content: left;
@@ -369,7 +366,6 @@
       text-align: left;
       position: relative;
       z-index: 10;
-      padding: 0 60px;
     }
 
     .services-heading {
@@ -380,6 +376,7 @@
       position: relative;
       overflow: hidden;
       line-height: 1;
+      padding: 0 18px;
     }
 
     .services-heading .letter {
@@ -406,6 +403,66 @@
       pointer-events: none;
     }
 
+
+    /* show reel section */
+    .show-reel-section {
+      position: relative;
+    width: 98vw;
+    height: 100vh;
+    overflow: hidden;
+    margin-left: 15px;
+    }
+
+    .video-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(8px);
+      /* Blur effect */
+      background: rgba(0, 0, 0, 0.2);
+      /* subtle overlay for better contrast */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .play-button {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-size: 1.2rem;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.026);
+      transition: all 0.3s ease;
+      padding: 10px;
+
+      /* ✅ Add these lines for centering text */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .play-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
 
     /* ===== RESPONSIVE STYLES ===== */
     @media (max-width: 768px) {
@@ -460,7 +517,7 @@
         font-size: 5rem;
         letter-spacing: 0.15em;
       }
-      
+
       .services-container {
         padding: 0 40px;
       }
@@ -513,12 +570,11 @@
         font-size: 3.5rem;
         letter-spacing: 0.1em;
       }
-      
+
       .services-container {
         padding: 0 20px;
       }
     }
-
   </style>
 </head>
 
@@ -561,14 +617,18 @@
 
   <!-- THIRD SECTION: Services -->
   <section id="section-three">
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    
     <div class="services-container">
       <h2 class="services-heading" id="services-title">Services</h2>
+      <div class="show-reel-section">
+        <iframe class="video-iframe"
+          src="https://www.youtube.com/embed/n9yh-saRjbg?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=n9yh-saRjbg&modestbranding=1"
+          title="Showreel" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
+        </iframe>
+
+        <div class="video-overlay">
+          <div class="play-button">Play Show-Reel</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -805,7 +865,7 @@
       textElement.appendChild(secondLineDiv);
 
       // Use GSAP to animate letters with stagger
-      gsap.fromTo(allLetters, 
+      gsap.fromTo(allLetters,
         {
           y: 100,
           opacity: 0
@@ -1013,7 +1073,7 @@
         scrollTrigger: {
           trigger: sectionTwo,
           start: "top top",
-          end: "+=200vh",
+          end: "+=100vh",
           scrub: 1,
           pin: ".dm-zoom-reveal-wrapper-2",
           anticipatePin: 1,
@@ -1084,10 +1144,10 @@
     function initializeServicesAnimation() {
       const servicesTitle = document.getElementById('services-title');
       const text = 'Services';
-      
+
       // Clear the existing text and create letter spans
       servicesTitle.innerHTML = '';
-      
+
       // Split text into individual letters and create spans
       for (let i = 0; i < text.length; i++) {
         const letterSpan = document.createElement('span');
@@ -1096,9 +1156,9 @@
         letterSpan.style.animationDelay = `${i * 0.1}s`;
         servicesTitle.appendChild(letterSpan);
       }
-      
+
       const letters = servicesTitle.querySelectorAll('.letter');
-      
+
       // Create GSAP ScrollTrigger animation
       gsap.set(letters, {
         y: 150,
@@ -1106,7 +1166,7 @@
         opacity: 0,
         transformOrigin: "center bottom"
       });
-      
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: "#section-three",
@@ -1115,14 +1175,14 @@
           toggleActions: "play none none reverse",
           onStart: () => {
             // Add a subtle scale animation to the container
-            gsap.fromTo('.services-container', 
-              { scale: 0.8 }, 
+            gsap.fromTo('.services-container',
+              { scale: 0.8 },
               { scale: 1, duration: 0.6, ease: "back.out(1.7)" }
             );
           }
         }
       });
-      
+
       // Animate each letter with stagger
       tl.to(letters, {
         y: 0,
@@ -1135,7 +1195,7 @@
           from: "start"
         }
       });
-      
+
       // Add a secondary animation for extra flair
       tl.to(letters, {
         duration: 0.4,
