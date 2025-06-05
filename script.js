@@ -439,7 +439,7 @@ function initializeSecondSection() {
         scrollTrigger: {
             trigger: sectionTwo,
             start: "top top",
-            end: "+=150vh",
+            end: "+=100vh",
             scrub: 1,
             pin: ".dm-zoom-reveal-wrapper-2",
             anticipatePin: 1,
@@ -471,7 +471,7 @@ function initializeSecondSection() {
             zIndex: 10 + i,
             x: targetPositions[i].x,
             y: targetPositions[i].y,
-        }, 1 + i * 0.6); // Staggered appearance
+        }, 0.5 + i * 0.4); // Staggered appearance
     });
 
     // Phase 3: Images move further out and scale up (2-5s)
