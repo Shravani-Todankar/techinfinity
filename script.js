@@ -463,7 +463,7 @@ function initializeSecondSection() {
     // Phase 2: Images popup from center and move to positions (0.5-4s)
     imgs.forEach((img, i) => {
         tl.to(img, {
-            duration: 4,
+            duration: 2.5,
             opacity: 1,
             scale: 1,
             filter: "blur(0px)",
