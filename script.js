@@ -463,15 +463,15 @@ function initializeSecondSection() {
     // Phase 2: Images popup from center and move to positions (0.5-4s)
     imgs.forEach((img, i) => {
         tl.to(img, {
-            duration: 2.5,
+            duration: 4,
             opacity: 1,
             scale: 1,
             filter: "blur(0px)",
-            ease: "power3.out",
+            ease: "power2.out",
             zIndex: 10 + i,
             x: targetPositions[i].x,
             y: targetPositions[i].y,
-        }, 0.5 + i * 0.4); // Staggered appearance
+        }, 1 + i * 0.6); // Staggered appearance
     });
 
     // Phase 3: Images move further out and scale up (2-5s)
