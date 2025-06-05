@@ -439,7 +439,7 @@ function initializeSecondSection() {
         scrollTrigger: {
             trigger: sectionTwo,
             start: "top top",
-            end: "+=100vh",
+            end: "+=150vh",
             scrub: 1,
             pin: ".dm-zoom-reveal-wrapper-2",
             anticipatePin: 1,
