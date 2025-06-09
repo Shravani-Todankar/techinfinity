@@ -1,4 +1,3 @@
-
 // ===== FIRST SECTION: INFINITY SHAPE ANIMATION =====
 const container = document.getElementById('container');
 const infinityContainer = document.getElementById('infinity-container');
@@ -42,6 +41,7 @@ let originalPositions = [];
 let centerImage = null;
 let sectionOnePinned = false;
 let animationComplete = false;
+let infinityShiftComplete = false;
 
 // Create and append images at random initial positions
 imgSrcs.forEach(src => {
@@ -63,14 +63,39 @@ function initializeSectionPinning() {
     ScrollTrigger.create({
         trigger: "#section-one",
         start: "top top",
-        end: () => animationComplete ? "+=0" : "+=10000", // Very large end value until animation completes
+        end: () => animationComplete && infinityShiftComplete ? "+=0" : "+=10000", // Very large end value until animation completes
         pin: true,
         pinSpacing: false,
         onUpdate: self => {
-            if (animationComplete && self.progress > 0) {
+            if (animationComplete && infinityShiftComplete && self.progress > 0) {
+                // Hide the scroll indicator
+                if (scrollIndicator) {
+                    scrollIndicator.classList.remove('show');
+                }
+        
                 // Unpin when animation is complete and user tries to scroll
                 self.kill();
                 enableScrollTransition();
+            }
+        }
+    });
+}
+
+function reenableScrollIndicatorOnScrollUp() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    ScrollTrigger.create({
+        trigger: "#section-one",
+        start: "top top",
+        end: "bottom top",
+        onEnter: () => {
+            if (animationComplete && scrollIndicator) {
+                scrollIndicator.classList.add("show");
+            }
+        },
+        onLeaveBack: () => {
+            if (scrollIndicator) {
+                scrollIndicator.classList.remove("show");
             }
         }
     });
@@ -152,35 +177,111 @@ function formInfinityShape() {
     setTimeout(() => {
         container.classList.remove('slow-transition');
         container.classList.add('infinity-formed');
-
-        animateSplitText(topText);
-        topText.style.opacity = '1';
         enableRepelAndFlipProximity();
 
         document.getElementById('section-one').style.background = 'transparent';
 
+        // NEW: Start the infinity shape shift down animation immediately after formation
+        setTimeout(() => {
+            shiftInfinityShapeDown();
+        }, 1000); // Wait 1 second after infinity shape formation
+
+        // Start text animation after the shape shift begins
+        setTimeout(() => {
+            animateSplitText(topText);
+            topText.style.opacity = '1';
+        }, 2000); // Wait 2 seconds to let shift animation start
 
         // Complete animation sequence and show scroll indicator
         setTimeout(() => {
             scrollIndicator.classList.add('show');
+            
             // Mark animation as complete after text reveal
             setTimeout(() => {
                 animationComplete = true;
-                // Refresh ScrollTrigger to allow unpinning
-                ScrollTrigger.refresh();
+
+                // Show header again after animation completes (WITHOUT layout shift)
+                const header = document.querySelector('.header');
+                header.classList.remove('hidden');
+
+                // REMOVED: Layout shifting functionality
+                // The header will now overlay without affecting layout
+                
             }, 1000); // Wait 1 second after scroll indicator shows
-        }, 2000);
+        }, 4000); // Adjusted timing to account for earlier shift
     }, 4000);
 }
 
-// Animate the top text split reveal with proper spacing
+// NEW FUNCTION: Smoothly shift the entire infinity shape downward
+function shiftInfinityShapeDown() {
+    const shiftDistance = window.innerHeight * 0.1; // Shift down by 30% of viewport height
+    
+    // Create a GSAP timeline for smooth coordinated movement
+    const shiftTimeline = gsap.timeline({
+        ease: "power2.inOut",
+        onStart: () => {
+            // Disable repel effect during transition
+            infinityContainer.style.pointerEvents = 'none';
+        },
+        onComplete: () => {
+            infinityShiftComplete = true;
+            
+            // Re-enable interactions
+            infinityContainer.style.pointerEvents = 'auto';
+            
+            // Update original positions for repel effect
+            images.forEach((img, idx) => {
+                const rect = img.getBoundingClientRect();
+                const containerRect = infinityContainer.getBoundingClientRect();
+                originalPositions[idx] = {
+                    x: rect.left + rect.width/2 - containerRect.left,
+                    y: rect.top + rect.height/2 - containerRect.top
+                };
+            });
+            
+            // REMOVED: ScrollTrigger.refresh() that was causing layout shift
+        }
+    });
+
+    // Shift the entire infinity container down
+    shiftTimeline.to(infinityContainer, {
+        y: shiftDistance,
+        duration: 2.0,
+        ease: "power2.inOut"
+    }, 0);
+
+    // Add a subtle scale effect to make the movement more dynamic
+    shiftTimeline.to(infinityContainer, {
+        scale: 0.92,
+        duration: 1.0,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1
+    }, 0.3);
+
+    // Subtle opacity animation for smooth transition feel
+    shiftTimeline.to(images, {
+        opacity: 0.7,
+        duration: 0.6,
+        ease: "power1.inOut",
+        stagger: 0.03
+    }, 0.2)
+    .to(images, {
+        opacity: 1,
+        duration: 1.0,
+        ease: "power1.inOut",
+        stagger: 0.02
+    }, 1.0);
+}
+
+// Animate the top text split reveal with word-by-word animation
 function animateSplitText(textElement) {
     const firstLine = ['Best', 'Digital', 'Creative'];
     const secondLine = ['Marketing', 'Agency'];
 
     textElement.textContent = '';
 
-    const allLetters = [];
+    const allWords = [];
 
     // First line
     const firstLineDiv = document.createElement('div');
@@ -191,20 +292,16 @@ function animateSplitText(textElement) {
 
         // Set the class based on the word
         if (word === 'Creative') {
-            spanWrapper.className = 'italic';
+            spanWrapper.className = 'italic word-span';
         } else {
-            spanWrapper.className = 'normal';
+            spanWrapper.className = 'normal word-span';
         }
 
-        // Split each word into individual letters
-        for (let i = 0; i < word.length; i++) {
-            const letterSpan = document.createElement('span');
-            letterSpan.textContent = word[i];
-            spanWrapper.appendChild(letterSpan);
-            allLetters.push(letterSpan);
-        }
-
+        // Set the word content directly (no letter splitting)
+        spanWrapper.textContent = word;
+        
         firstLineDiv.appendChild(spanWrapper);
+        allWords.push(spanWrapper);
     });
 
     textElement.appendChild(firstLineDiv);
@@ -215,23 +312,19 @@ function animateSplitText(textElement) {
 
     secondLine.forEach((word) => {
         const spanWrapper = document.createElement('span');
-        spanWrapper.className = 'normal';
+        spanWrapper.className = 'normal word-span';
 
-        // Split each word into individual letters
-        for (let i = 0; i < word.length; i++) {
-            const letterSpan = document.createElement('span');
-            letterSpan.textContent = word[i];
-            spanWrapper.appendChild(letterSpan);
-            allLetters.push(letterSpan);
-        }
+        // Set the word content directly (no letter splitting)
+        spanWrapper.textContent = word;
 
         secondLineDiv.appendChild(spanWrapper);
+        allWords.push(spanWrapper);
     });
 
     textElement.appendChild(secondLineDiv);
 
-    // Use GSAP to animate letters with stagger
-    gsap.fromTo(allLetters,
+    // Use GSAP to animate words with stagger (same style as letters)
+    gsap.fromTo(allWords,
         {
             y: 100,
             opacity: 0
@@ -239,9 +332,9 @@ function animateSplitText(textElement) {
         {
             y: 0,
             opacity: 1,
-            duration: 0.6,
+            duration: 1.2,
             ease: "power2.out",
-            stagger: 0.05,
+            stagger: 0.2,
             delay: 0.3
         }
     );
@@ -304,11 +397,11 @@ function enableRepelAndFlipProximity() {
 function enableScrollTransition() {
     if (!window.flowImages || !window.staticImages) return;
 
-    // Show section-two when transition begins
     const sectionTwo = document.querySelector('#section-two');
+    const scrollIndicator = document.querySelector('.scroll-indicator'); // Already defined globally, but reassigned for safety
+
     sectionTwo.classList.add('visible');
 
-    // Create timeline for the transition
     const transitionTl = gsap.timeline({
         scrollTrigger: {
             trigger: '#section-one',
@@ -316,14 +409,13 @@ function enableScrollTransition() {
             end: 'bottom 15%',
             scrub: 2,
             onStart: () => {
-                // Mark flow images as transitioning
+
                 window.flowImages.forEach(({ img }) => {
                     img.dataset.transitioning = 'true';
                     img.style.zIndex = '200';
                 });
             },
             onComplete: () => {
-                // Hide all images after transition
                 images.forEach(img => {
                     img.style.opacity = '0';
                 });
@@ -467,7 +559,7 @@ function initializeSecondSection() {
             opacity: 1,
             scale: 1,
             filter: "blur(0px)",
-            ease: "power2.out",
+            ease: "sine.inOut",
             zIndex: 10 + i,
             x: targetPositions[i].x,
             y: targetPositions[i].y,
@@ -573,140 +665,172 @@ function initializeServicesAnimation() {
     }, "-=0.4");
 }
 
-// ===== VIDEO ZOOM ANIMATION =====
-function initializeVideoZoomAnimation() {
-    const videoSection = document.getElementById('video-section');
-    const playButton = document.querySelector('.play-button');
+// section-five-service-provider
+let serviceItems = document.querySelectorAll(".service-item");
+let serviceImages = document.querySelectorAll(".service-image");
 
-    // Initial state: video section is scaled down and blurred
-    gsap.set(videoSection, {
-        scale: 0.7,
-        opacity: 0,
-        filter: 'blur(10px)',
-        transformOrigin: 'center center'
+// adding eventListeners to all the service items
+for (let i = 0; i < 5; i++) {
+    // image reveal animation
+    const animation = gsap.to(serviceImages[i], {
+        opacity: 1,
+        duration: 0.2,
+        scale: 1,
+        ease: "ease-in-out"
     });
 
-    // Create the zoom-in animation timeline
-    const videoTl = gsap.timeline({
-        scrollTrigger: {
-            trigger: videoSection,
-            start: "top 90%",        // Start when video section is 90% in viewport
-            end: "top 30%",          // End when video section is 30% in viewport
-            scrub: 1.5,              // Smooth scrubbing
-            anticipatePin: 1,
-            onStart: () => {
-                // Add interaction class when animation starts
-                videoSection.classList.add('zoomed');
-            },
-            onComplete: () => {
-                // Ensure final state is perfect
-                gsap.set(videoSection, {
-                    scale: 1,
-                    opacity: 1,
-                    filter: 'blur(0px)'
-                });
-            }
-        }
-    });
+    serviceItems[i].addEventListener("mouseenter", () => animation.play());
+    serviceItems[i].addEventListener("mouseleave", () => animation.reverse());
 
-    // Main zoom animation phases
-    videoTl
-        // Phase 1: Initial reveal (fade in and start scaling)
-        .to(videoSection, {
-            opacity: 0.6,
-            scale: 0.8,
-            filter: 'blur(5px)',
-            duration: 0.3,
-            ease: 'power2.out'
-        })
-        // Phase 2: Zoom to normal size with clarity
-        .to(videoSection, {
-            scale: 1,
-            opacity: 1,
-            filter: 'blur(0px)',
-            duration: 0.5,
-            ease: 'power3.out'
-        })
-        // Phase 3: Slight overshoot for bounce effect
-        .to(videoSection, {
-            scale: 1.02,
-            duration: 0.15,
-            ease: 'power2.inOut'
-        })
-        // Phase 4: Settle to final size
-        .to(videoSection, {
-            scale: 1,
-            duration: 0.05,
-            ease: 'power1.out'
-        });
+    // initialization
+    animation.reverse();
+}
 
-    // Additional hover enhancement when video is visible
-    videoSection.addEventListener('mouseenter', () => {
-        if (videoSection.classList.contains('zoomed')) {
-            gsap.to(videoSection, {
-                scale: 1.03,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-            gsap.to(playButton, {
-                scale: 1.1,
-                duration: 0.3,
-                ease: 'back.out(1.7)'
-            });
-        }
-    });
-
-    videoSection.addEventListener('mouseleave', () => {
-        if (videoSection.classList.contains('zoomed')) {
-            gsap.to(videoSection, {
-                scale: 1,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-            gsap.to(playButton, {
-                scale: 1,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-        }
-    });
-
-    // Click handler for the play button
-    playButton.addEventListener('click', () => {
-        // Add click animation
-        gsap.to(playButton, {
-            scale: 0.95,
-            duration: 0.1,
-            ease: 'power2.inOut',
-            yoyo: true,
-            repeat: 1
-        });
-
-        // Add functionality to remove overlay and enable video controls
-        setTimeout(() => {
-            const videoOverlay = document.querySelector('.video-overlay');
-            const videoIframe = document.querySelector('.video-iframe');
-
-            gsap.to(videoOverlay, {
-                opacity: 0,
-                duration: 0.5,
-                ease: 'power2.out',
-                onComplete: () => {
-                    videoOverlay.style.display = 'none';
-                    videoIframe.style.pointerEvents = 'auto';
-                    // Restart video with controls
-                    const newSrc = videoIframe.src.replace('controls=0', 'controls=1').replace('autoplay=1&mute=1', 'autoplay=1');
-                    videoIframe.src = newSrc;
-                }
-            });
-        }, 200);
+// to move image along with cursor
+function moveImage(e) {
+    gsap.to([...serviceImages], {
+        css: {
+            left: e.pageX + 50,
+            top: e.pageY,
+        },
+        duration: 0.3,
     });
 }
 
-// Initialize everything when page loads
+serviceItems.forEach((el) => {
+    el.addEventListener("mousemove", moveImage);
+});
+
+
+// Counters section
+// Intersection Observer for triggering animation when section comes into view
+const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            startCounters();
+            observer.unobserve(entry.target); // Run animation only once
+        }
+    });
+}, observerOptions);
+
+// Observe the counter section
+observer.observe(document.getElementById('counters'));
+
+function startCounters() {
+    const counterItems = document.querySelectorAll('.counter-item');
+    const counterNumbers = document.querySelectorAll('.counter-number');
+
+    // Add animation class to counter items
+    counterItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.classList.add('animate');
+        }, index * 150);
+    });
+
+    // Animate counter numbers
+    counterNumbers.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const increment = target / 100;
+        let current = 0;
+        const suffix = target === 100 ? '%' : '+';
+
+        const updateCounter = () => {
+            if (current < target) {
+                current += increment;
+                if (current > target) current = target;
+                
+                if (target === 100) {
+                    counter.textContent = Math.ceil(current) + '%';
+                } else {
+                    counter.textContent = Math.ceil(current) + '+';
+                }
+                
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = target + suffix;
+            }
+        };
+
+        // Start counter animation with a slight delay
+        setTimeout(updateCounter, 300);
+    });
+}
+
+// Smooth scrolling for better demo experience
+window.addEventListener('load', () => {
+    const links = document.querySelectorAll('a[href^="#"]');
+    links.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        });
+    });
+});
+
+
+// circlering section
+function initializeCircleRingAnimation() {
+    const allCircles = gsap.utils.toArray('.circle-ring');
+    const sectionTwo = document.querySelector('#section-two');
+
+    // 1. Circle rings fade in when section comes into view
+    ScrollTrigger.create({
+        trigger: sectionTwo,
+        start: "top 80%",
+        onEnter: () => {
+            allCircles.forEach((circle, index) => {
+                gsap.to(circle, {
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    delay: index * 0.2 // Staggered fade-in
+                });
+            });
+        }
+    });
+
+    // 2. Circle rings scale up and down on scroll
+    ScrollTrigger.create({
+        trigger: sectionTwo,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1,
+        onUpdate: self => {
+            const progress = self.progress;
+            allCircles.forEach((circle, index) => {
+                // Each circle scales differently based on scroll
+                const scaleAmount = 0.9 + Math.sin(progress * Math.PI * 3 + index) * 0.15;
+                gsap.set(circle, { 
+                    scale: scaleAmount,
+                    rotation: progress * 20 * (index + 1)
+                });
+            });
+        }
+    });
+}
+
+// Call the function after the page loads
 window.onload = () => {
+
+    // Hide header immediately when page loads to give full space for animation
+    const header = document.querySelector('.header');
+    header.classList.add('hidden');
+
+    initializeCircleRingAnimation();
+    reenableScrollIndicatorOnScrollUp();
+
     initializeSectionPinning();
     fadeInImages();
     initializeServicesAnimation();
-    initializeVideoZoomAnimation(); // Add this line
 };
