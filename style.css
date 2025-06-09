@@ -13,13 +13,22 @@ html {
     /* Make body transparent */
 }
 
-/* header CSS */
+/* header CSS - Non-sticky header */
 .header {
     display: flex;
     justify-content: space-around;
     align-items: center;
     padding: 20px 60px;
     background-color: #fff;
+    position: relative;
+    z-index: 1000;
+    transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .logo {
@@ -48,8 +57,8 @@ html {
     color: #007bff;
 }
 
-/* From Uiverse.io by MuhammadHasann */ 
-button {
+/* From Uiverse.io by MuhammadHasann */
+.header-button {
     position: relative;
     padding: 12px 25px;
     background: #3793D0;
@@ -61,9 +70,9 @@ button {
     box-shadow: 0 0 0 #3793D0;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
-  }
-  
-  .star-1 {
+}
+
+.star-1 {
     position: absolute;
     top: 20%;
     left: 20%;
@@ -72,9 +81,9 @@ button {
     filter: drop-shadow(0 0 0 #fffdef);
     z-index: -5;
     transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
-  }
-  
-  .star-2 {
+}
+
+.star-2 {
     position: absolute;
     top: 45%;
     left: 45%;
@@ -83,9 +92,9 @@ button {
     filter: drop-shadow(0 0 0 #fffdef);
     z-index: -5;
     transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
-  }
-  
-  .star-3 {
+}
+
+.star-3 {
     position: absolute;
     top: 40%;
     left: 40%;
@@ -94,9 +103,9 @@ button {
     filter: drop-shadow(0 0 0 #fffdef);
     z-index: -5;
     transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
-  }
-  
-  .star-4 {
+}
+
+.star-4 {
     position: absolute;
     top: 20%;
     left: 40%;
@@ -105,9 +114,9 @@ button {
     filter: drop-shadow(0 0 0 #fffdef);
     z-index: -5;
     transition: all 0.8s cubic-bezier(0, 0.4, 0, 1.01);
-  }
-  
-  .star-5 {
+}
+
+.star-5 {
     position: absolute;
     top: 25%;
     left: 45%;
@@ -116,9 +125,9 @@ button {
     filter: drop-shadow(0 0 0 #fffdef);
     z-index: -5;
     transition: all 0.6s cubic-bezier(0, 0.4, 0, 1.01);
-  }
-  
-  .star-6 {
+}
+
+.star-6 {
     position: absolute;
     top: 5%;
     left: 50%;
@@ -127,16 +136,16 @@ button {
     filter: drop-shadow(0 0 0 #fffdef);
     z-index: -5;
     transition: all 0.8s ease;
-  }
-  
-  button:hover {
+}
+
+.header-button:hover {
     background: #61adff;
     color: #000;
     box-shadow: 0 0 25px #61adff;
-     border: 3px solid #61adff;
-  }
-  
-  button:hover .star-1 {
+    border: 3px solid #61adff;
+}
+
+.header-button:hover .star-1 {
     position: absolute;
     top: -80%;
     left: -30%;
@@ -144,9 +153,9 @@ button {
     height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
-  }
-  
-  button:hover .star-2 {
+}
+
+.header-button:hover .star-2 {
     position: absolute;
     top: -25%;
     left: 10%;
@@ -154,9 +163,9 @@ button {
     height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
-  }
-  
-  button:hover .star-3 {
+}
+
+.header-button:hover .star-3 {
     position: absolute;
     top: 55%;
     left: 25%;
@@ -164,9 +173,9 @@ button {
     height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
-  }
-  
-  button:hover .star-4 {
+}
+
+.header-button:hover .star-4 {
     position: absolute;
     top: 30%;
     left: 80%;
@@ -174,9 +183,9 @@ button {
     height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
-  }
-  
-  button:hover .star-5 {
+}
+
+.header-button:hover .star-5 {
     position: absolute;
     top: 25%;
     left: 115%;
@@ -184,9 +193,9 @@ button {
     height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
-  }
-  
-  button:hover .star-6 {
+}
+
+.header-button:hover .star-6 {
     position: absolute;
     top: 5%;
     left: 60%;
@@ -194,19 +203,19 @@ button {
     height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
-  }
-  
-  .fil0 {
+}
+
+.fil0 {
     fill: #3793D0;
-  }
-  
+}
+
 
 /* ===== FIRST SECTION STYLES ===== */
 #section-one {
-    height: 100vh;
+    height: 120vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     perspective: 1000px;
     position: relative;
     /* overflow: hidden; */
@@ -214,19 +223,7 @@ button {
     /* Keep section-one white */
 }
 
-#container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
-}
-
-/* Top text styling - initially hidden */
+/* Updated top text styling - positioned below infinity container */
 #top-text {
     display: flex;
     flex-direction: column;
@@ -246,9 +243,76 @@ button {
     pointer-events: none;
     user-select: none;
     z-index: 20;
-    margin-bottom: 80px;
+    /* margin-top: 50px; */
     padding: 20px 0;
     position: relative;
+}
+
+/* Updated container layout to accommodate new text positioning */
+#container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Changed from center to flex-start */
+    align-items: center;
+    padding: 40px 20px; 
+}
+
+/* Updated infinity container positioning */
+#infinity-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px; /* Reduced margin since container has padding now */
+}
+
+/* ===== RESPONSIVE STYLES FOR NEW LAYOUT ===== */
+@media (max-width: 768px) {
+    #container {
+        padding: 20px 15px;
+        padding-top: 80px;
+    }
+
+    #top-text {
+        font-size: 2.5rem;
+        margin-top: 100px;
+    }
+
+    #top-text span.italic {
+        font-size: 2.5rem;
+    }
+
+    #infinity-container {
+        height: 300px;
+        margin-top: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    #container {
+        padding: 15px 10px;
+        padding-top: 60px;
+    }
+
+    #top-text {
+        font-size: 2rem;
+        margin-top: 80px;
+    }
+
+    #top-text span.italic {
+        font-size: 2rem;
+    }
+
+    #infinity-container {
+        height: 250px;
+        margin-top: 30px;
+    }
 }
 
 /* First line container */
@@ -278,8 +342,8 @@ button {
     color: #000;
 }
 
-/* Each letter span for split text animation */
-#top-text span span {
+/* Each word span for split text animation */
+#top-text span.word-span {
     display: inline-block;
     transform: translateY(100%);
     opacity: 0;
@@ -358,7 +422,7 @@ button {
 /* Scroll indicator */
 .scroll-indicator {
     position: absolute;
-    bottom: 15px;
+    bottom: -45px;
     left: 50%;
     transform: translateX(-50%);
     color: #666;
@@ -447,13 +511,14 @@ button {
     /* Ensure inner container is transparent */
 }
 
+/* UPDATED CIRCLE RING STYLES */
 .circle-ring {
     position: absolute;
     top: 50%;
     left: 50%;
     width: 700px;
     height: 670px;
-    border: 2px solid rgba(181, 179, 179, 0.229);
+    border: 2px solid rgba(181, 179, 179, 0.624);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     box-shadow:
@@ -461,29 +526,40 @@ button {
         inset 0 0 30px rgba(255 255 255 / 0.1);
     z-index: 5;
     will-change: transform, opacity;
-    opacity: 1;
-    /* Initially visible */
+    opacity: 0; /* Start completely invisible */
+    transform-origin: center center; /* Ensure scaling happens from center */
 }
 
 .circle-ring.inner-ring-1 {
     width: 500px;
     height: 480px;
-    border: 2px solid rgba(181, 179, 179, 0.229);
+    border: 2px solid rgba(181, 179, 179, 0.624);
     z-index: 4;
+    opacity: 0; /* Start completely invisible */
 }
 
 .circle-ring.inner-ring-2 {
     width: 350px;
     height: 330px;
-    border: 2px solid rgba(181, 179, 179, 0.229);
+    border: 2px solid rgba(181, 179, 179, 0.624);
     z-index: 3;
+    opacity: 0; /* Start completely invisible */
 }
 
 .circle-ring.inner-ring-3 {
     width: 200px;
     height: 190px;
-    border: 1px solid rgba(181, 179, 179, 0.229);
+    border: 1px solid rgba(181, 179, 179, 0.624);
     z-index: 2;
+    opacity: 0; /* Start completely invisible */
+}
+
+/* Optional: Add a subtle glow effect when circles are visible */
+.circle-ring.active {
+    box-shadow:
+        0 0 80px rgba(255 255 255 / 0.25),
+        inset 0 0 40px rgba(255 255 255 / 0.15),
+        0 0 120px rgba(181, 179, 179, 0.3);
 }
 
 .center-text {
@@ -491,8 +567,9 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2.8rem;
-    font-weight: 700;
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    font-weight: 500;
     text-align: center;
     color: #0a0808;
     opacity: 0;
@@ -500,10 +577,14 @@ button {
     pointer-events: none;
     user-select: none;
     text-shadow: 0 0 18px rgba(82, 131, 163, 0.7);
-    max-width: 85vw;
-    line-height: 1.2;
+    line-height: 1.6;
     mix-blend-mode: screen;
     will-change: opacity;
+    width: 40vw;
+}
+
+.center-text i {
+    font-weight: 600;
 }
 
 .dm-zoom-reveal-img-2 {
@@ -529,7 +610,7 @@ button {
 
 /* ===== THIRD SECTION STYLES ===== */
 #section-three {
-    height: 200vh;
+    height: 125.5vh;
     background: white;
     display: flex;
     justify-content: left;
@@ -588,7 +669,7 @@ button {
     margin-left: 15px;
     transform: scale(0.7);
     opacity: 0;
-    filter: blur(10px);
+    filter: blur(12px);
     will-change: transform, opacity, filter;
     border-radius: 20px;
 }
@@ -600,7 +681,6 @@ button {
     width: 100%;
     height: 100%;
     border: none;
-    border-radius: 20px;
     pointer-events: none;
 }
 
@@ -615,18 +695,20 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 20px;
     transition: backdrop-filter 0.3s ease;
 }
 
 .play-button {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
     width: 180px;
     height: 180px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
-    color: white;
-    font-size: 1.2rem;
     text-align: center;
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.026);
@@ -637,11 +719,13 @@ button {
     align-items: center;
     transform: scale(1);
     will-change: transform;
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
 }
 
 .play-button:hover {
     background: rgba(255, 255, 255, 0.25);
     transform: scale(1.05);
+    border: none;
 }
 
 .show-reel-section.zoomed .play-button {
@@ -651,6 +735,181 @@ button {
 .show-reel-section.zoomed .video-overlay {
     backdrop-filter: blur(6px);
 }
+
+/* Section Four */
+section.section-four {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+}
+
+.svg-section1 {
+    display: flex;
+    flex-direction: row;
+}
+
+.svg-section2 {
+    display: flex;
+    flex-direction: row;
+}
+
+
+/* section five */
+/* Services image reveal section */
+.service-provider-container {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.service-item {
+    font-size: 50px;
+    list-style-type: none;
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.service-number {
+    font-size: 16px;
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.service-title {
+    display: inline-flex;
+    height: 10px;
+    color: #333;
+    position: relative;
+    z-index: 1;
+    font-size: 38px;
+}
+
+.service-description {
+    font-size: 15px;
+    display: inline-flex;
+    height: 100px;
+    color: #333;
+    position: relative;
+    z-index: 1;
+    text-transform: capitalize;
+}
+
+.service-item:hover .service-title {
+    color: #3793D0;
+    position: relative;
+    z-index: 3;
+}
+
+.service-image {
+    height: 300px;
+    width: 240px;
+    background-size: cover;
+    position: absolute;
+    z-index: 2;
+    opacity: 0;
+    margin-top: -150px;
+    transform: scale(0.4);
+}
+
+.service-image.web-development {
+    background-image: url("https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80");
+}
+
+.service-image.performance-marketing {
+    background-image: url("https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80");
+}
+
+.service-image.seo {
+    background-image: url("https://images.unsplash.com/photo-1555421689-491a97ff2040?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80");
+}
+
+.service-image.social-media {
+    background-image: url("https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80");
+}
+
+.service-image.animation {
+    background-image: url("https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80");
+}
+
+
+/* counters */
+.counter-section {
+    padding: 80px 50px;
+    background-color: #ffffff;
+    position: relative;
+    font-family: "Helvetica";
+}
+
+.container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.counters-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    align-items: top;
+    text-align: center;
+}
+
+.counter-item {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+.counter-item.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.counter-number {
+    font-size: 95px;
+    font-weight: 300;
+    color: #333;
+    margin-bottom: 40px;
+    display: block;
+    line-height: 1;
+}
+
+.counter-label {
+    font-size: 25px;
+    color: #333;
+    font-weight: 350;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .counter-section {
+        padding: 60px 15px;
+    }
+    
+    .counters-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .counters-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .counter-section {
+        padding: 40px 15px;
+    }
+}
+
 
 /* ===== RESPONSIVE STYLES ===== */
 @media (max-width: 768px) {
