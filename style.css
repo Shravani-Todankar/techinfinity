@@ -7,10 +7,9 @@ html {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    font-family: Arial, sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     scroll-behavior: smooth;
     background: transparent;
-    /* Make body transparent */
 }
 
 /* header CSS - Non-sticky header */
@@ -209,7 +208,6 @@ html {
     fill: #3793D0;
 }
 
-
 /* ===== FIRST SECTION STYLES ===== */
 #section-one {
     height: 120vh;
@@ -218,9 +216,7 @@ html {
     align-items: flex-start;
     perspective: 1000px;
     position: relative;
-    /* overflow: hidden; */
     background: white;
-    /* Keep section-one white */
 }
 
 /* Updated top text styling - positioned below infinity container */
@@ -232,18 +228,16 @@ html {
     gap: 0.1em;
     overflow: hidden;
     opacity: 0;
-    /* hidden initially */
     width: 85%;
     text-align: center;
     line-height: 1.1;
     font-weight: 700;
     font-size: 4rem;
     color: #000;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     pointer-events: none;
     user-select: none;
     z-index: 20;
-    /* margin-top: 50px; */
     padding: 20px 0;
     position: relative;
 }
@@ -256,9 +250,9 @@ html {
     overflow: visible;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Changed from center to flex-start */
+    justify-content: flex-start;
     align-items: center;
-    padding: 40px 20px; 
+    padding: 40px 20px;
 }
 
 /* Updated infinity container positioning */
@@ -269,50 +263,7 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 50px; /* Reduced margin since container has padding now */
-}
-
-/* ===== RESPONSIVE STYLES FOR NEW LAYOUT ===== */
-@media (max-width: 768px) {
-    #container {
-        padding: 20px 15px;
-        padding-top: 80px;
-    }
-
-    #top-text {
-        font-size: 2.5rem;
-        margin-top: 100px;
-    }
-
-    #top-text span.italic {
-        font-size: 2.5rem;
-    }
-
-    #infinity-container {
-        height: 300px;
-        margin-top: 40px;
-    }
-}
-
-@media (max-width: 480px) {
-    #container {
-        padding: 15px 10px;
-        padding-top: 60px;
-    }
-
-    #top-text {
-        font-size: 2rem;
-        margin-top: 80px;
-    }
-
-    #top-text span.italic {
-        font-size: 2rem;
-    }
-
-    #infinity-container {
-        height: 250px;
-        margin-top: 30px;
-    }
+    margin-top: 50px;
 }
 
 /* First line container */
@@ -349,17 +300,6 @@ html {
     opacity: 0;
 }
 
-/* Infinity shape container */
-#infinity-container {
-    position: relative;
-    width: 100%;
-    height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 0;
-}
-
 .img-item {
     position: absolute;
     width: 60px;
@@ -383,8 +323,23 @@ html {
 
 .img-item.center-image {
     z-index: 100;
-    /* Higher z-index for the center image */
     transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.img-item:hover {
+    filter: brightness(1.1) saturate(1.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* For anchor wrapped images */
+a .img-item {
+    display: block;
+    text-decoration: none;
+}
+
+/* Disable pointer events during transitions */
+.img-item[data-transitioning="true"] {
+    pointer-events: none;
 }
 
 #container.slow-transition .img-item {
@@ -434,7 +389,7 @@ html {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
 }
 
 .scroll-indicator.show {
@@ -451,12 +406,7 @@ html {
 }
 
 @keyframes bounce {
-
-    0%,
-    20%,
-    50%,
-    80%,
-    100% {
+    0%, 20%, 50%, 80%, 100% {
         transform: translateY(0) rotate(45deg);
     }
 
@@ -472,7 +422,7 @@ html {
 /* ===== SECOND SECTION STYLES ===== */
 #section-two {
     background: transparent;
-    height: 120vh;
+    height: 172vh;
     color: white;
     position: relative;
     opacity: 0;
@@ -496,7 +446,6 @@ html {
     user-select: none;
     background: transparent;
     top: 0;
-    /* Ensure wrapper is also transparent */
 }
 
 .e-con-inner {
@@ -508,7 +457,6 @@ html {
     overflow: visible;
     pointer-events: none;
     background: transparent;
-    /* Ensure inner container is transparent */
 }
 
 /* UPDATED CIRCLE RING STYLES */
@@ -526,8 +474,8 @@ html {
         inset 0 0 30px rgba(255 255 255 / 0.1);
     z-index: 5;
     will-change: transform, opacity;
-    opacity: 0; /* Start completely invisible */
-    transform-origin: center center; /* Ensure scaling happens from center */
+    opacity: 0;
+    transform-origin: center center;
 }
 
 .circle-ring.inner-ring-1 {
@@ -535,7 +483,7 @@ html {
     height: 480px;
     border: 2px solid rgba(181, 179, 179, 0.624);
     z-index: 4;
-    opacity: 0; /* Start completely invisible */
+    opacity: 0;
 }
 
 .circle-ring.inner-ring-2 {
@@ -543,7 +491,7 @@ html {
     height: 330px;
     border: 2px solid rgba(181, 179, 179, 0.624);
     z-index: 3;
-    opacity: 0; /* Start completely invisible */
+    opacity: 0;
 }
 
 .circle-ring.inner-ring-3 {
@@ -551,7 +499,7 @@ html {
     height: 190px;
     border: 1px solid rgba(181, 179, 179, 0.624);
     z-index: 2;
-    opacity: 0; /* Start completely invisible */
+    opacity: 0;
 }
 
 /* Optional: Add a subtle glow effect when circles are visible */
@@ -608,151 +556,149 @@ html {
     transform: translate(-50%, -50%) scale(0.4);
 }
 
-/* ===== THIRD SECTION STYLES ===== */
-#section-three {
-    height: 125.5vh;
-    background: white;
-    display: flex;
-    justify-content: left;
-    align-items: left;
-    position: relative;
-    overflow: hidden;
-}
-
-.services-container {
-    text-align: left;
-    position: relative;
-    z-index: 10;
-}
-
-.services-heading {
-    font-size: 4rem;
-    font-weight: 500;
-    color: #333333;
-    font-family: Arial, Helvetica, sans-serif;
-    position: relative;
-    overflow: hidden;
-    line-height: 1;
-    padding: 0 18px;
-}
-
-.services-heading .letter {
-    display: inline-block;
-    transform: translateY(150px) rotateX(-90deg);
-    opacity: 0;
-    transform-origin: center bottom;
-    will-change: transform, opacity;
-}
-
-.services-heading .letter.animate {
-    transform: translateY(0) rotateX(0deg);
-    opacity: 1;
-}
-
-/* Decorative elements */
-.services-container::before {
-    content: '';
+/* ===== video SECTION STYLES ===== */
+.center-video {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    pointer-events: none;
-}
-
-/* Enhanced show reel section with zoom effect */
-.show-reel-section {
-    position: relative;
-    width: 98vw;
-    height: 100vh;
-    overflow: hidden;
-    margin-left: 15px;
-    transform: scale(0.7);
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%) scale(0.1);
     opacity: 0;
-    filter: blur(12px);
+    filter: blur(15px);
+    overflow: hidden;
+    z-index: 25;
     will-change: transform, opacity, filter;
-    border-radius: 20px;
+    pointer-events: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.177);
 }
 
-.video-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
+.center-video iframe {
     width: 100%;
     height: 100%;
     border: none;
-    pointer-events: none;
+    border-radius: 20px;
 }
 
+/* VIDEO OVERLAY AND MAGNETIC PLAY BUTTON STYLES */
 .video-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
-    background: rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: backdrop-filter 0.3s ease;
+    cursor: none;
+    z-index: 30;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.video-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .play-button {
-    font-family: Arial, Helvetica, sans-serif;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: 500;
-    letter-spacing: 1.5px;
     width: 180px;
     height: 180px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.026);
-    transition: all 0.3s ease;
-    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    transform: scale(1);
-    will-change: transform;
-    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    color: white;
+    user-select: none;
+    position: relative;
+    transform-origin: center center;
+    will-change: transform, box-shadow;
 }
 
 .play-button:hover {
     background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.05);
-    border: none;
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
-.show-reel-section.zoomed .play-button {
-    transform: scale(1.1);
+.play-icon {
+    width: 0;
+    height: 0;
+    border-left: 25px solid white;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    margin-left: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
 }
 
-.show-reel-section.zoomed .video-overlay {
-    backdrop-filter: blur(6px);
+.play-text {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    font-family: 'Helvetica Neue', sans-serif;
+    text-align: center;
 }
 
-/* Section Four */
-section.section-four {
+/* Enhanced hover states for better magnetic effect */
+.play-button.magnetic-hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+}
+
+.play-button.magnetic-hover .play-icon {
+    border-left-color: rgba(255, 255, 255, 0.9);
+}
+
+.play-button.magnetic-hover .play-text {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Section three */
+section.section-three {
     display: flex;
     flex-direction: row;
-    gap: 40px;
+    justify-content: center;
+    position: absolute;
+    width: 100vw;
 }
 
-.svg-section1 {
+.svg-section {
     display: flex;
     flex-direction: row;
+    width: 100vw;
+    justify-content: center;
+    height: 400vh;
 }
 
-.svg-section2 {
-    display: flex;
-    flex-direction: row;
+.svg-line {
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+    object-fit: fill;
+    height: 280vh;
 }
 
+.colorsvg-line {
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+    object-fit: fill;
+    height: 280vh;
+}
 
 /* section five */
 /* Services image reveal section */
@@ -764,20 +710,22 @@ section.section-four {
     flex-wrap: wrap;
     margin-left: 50px;
     margin-right: 50px;
+    padding-top: 350px;
 }
 
 .service-item {
     font-size: 50px;
     list-style-type: none;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     text-transform: uppercase;
     letter-spacing: 2px;
+    margin-bottom: 40px;
 }
 
 .service-number {
     font-size: 16px;
     color: #333;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     margin-bottom: 10px;
     font-weight: 500;
 }
@@ -838,13 +786,13 @@ section.section-four {
     background-image: url("https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80");
 }
 
-
 /* counters */
 .counter-section {
     padding: 80px 50px;
     background-color: #ffffff;
     position: relative;
     font-family: "Helvetica";
+    margin-top: 80px;
 }
 
 .container {
@@ -887,39 +835,16 @@ section.section-four {
     letter-spacing: 0.5px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .counter-section {
-        padding: 60px 15px;
-    }
-    
-    .counters-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 30px;
-    }
-}
-
-@media (max-width: 480px) {
-    .counters-grid {
-        grid-template-columns: 1fr;
-        gap: 25px;
-    }
-    
-    .counter-section {
-        padding: 40px 15px;
-    }
-}
-
-
 /* ===== RESPONSIVE STYLES ===== */
 @media (max-width: 768px) {
     #container {
         padding: 20px 15px;
+        padding-top: 80px;
     }
 
     #top-text {
         font-size: 2.5rem;
-        margin-bottom: 60px;
+        margin-top: 100px;
     }
 
     #top-text span.italic {
@@ -960,35 +885,42 @@ section.section-four {
         height: 135px;
     }
 
-    .services-heading {
-        font-size: 5rem;
-        letter-spacing: 0.15em;
+    .counter-section {
+        padding: 60px 15px;
     }
 
-    .services-container {
-        padding: 0 40px;
-    }
-
-    .show-reel-section {
-        margin-left: 10px;
-        width: 95vw;
+    .counters-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
     }
 
     .play-button {
         width: 140px;
         height: 140px;
-        font-size: 1rem;
+    }
+    
+    .play-icon {
+        border-left: 20px solid white;
+        border-top: 12px solid transparent;
+        border-bottom: 12px solid transparent;
+        margin-left: 6px;
+    }
+    
+    .play-text {
+        font-size: 12px;
+        margin-top: 6px;
     }
 }
 
 @media (max-width: 480px) {
     #container {
         padding: 15px 10px;
+        padding-top: 60px;
     }
 
     #top-text {
         font-size: 2rem;
-        margin-bottom: 40px;
+        margin-top: 80px;
     }
 
     #top-text span.italic {
@@ -1024,23 +956,29 @@ section.section-four {
         height: 95px;
     }
 
-    .services-heading {
-        font-size: 3.5rem;
-        letter-spacing: 0.1em;
+    .counters-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
     }
 
-    .services-container {
-        padding: 0 20px;
-    }
-
-    .show-reel-section {
-        margin-left: 5px;
-        width: 92vw;
+    .counter-section {
+        padding: 40px 15px;
     }
 
     .play-button {
         width: 120px;
         height: 120px;
-        font-size: 0.9rem;
+    }
+    
+    .play-icon {
+        border-left: 18px solid white;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        margin-left: 5px;
+    }
+    
+    .play-text {
+        font-size: 11px;
+        margin-top: 5px;
     }
 }
