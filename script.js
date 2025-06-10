@@ -37,20 +37,80 @@ const imgSrcs = [
     'https://picsum.photos/id/1081/60/70',
 ];
 
+// Add corresponding URLs for each image
+const imgLinks = [
+    'https://example.com/portfolio/project-1',
+    'https://example.com/portfolio/project-2',
+    'https://example.com/portfolio/project-3',
+    'https://example.com/services/web-development',
+    'https://example.com/portfolio/project-4',
+    'https://example.com/services/digital-marketing',
+    'https://example.com/portfolio/project-5',
+    'https://example.com/services/seo',
+    'https://example.com/portfolio/project-6',
+    'https://example.com/services/social-media',
+    'https://example.com/portfolio/project-7',
+    'https://example.com/services/animation',
+    'https://example.com/portfolio/project-8',
+    'https://example.com/case-studies/success-story-1',
+    'https://example.com/portfolio/project-9',
+    'https://example.com/case-studies/success-story-2',
+    'https://example.com/portfolio/project-10',
+    'https://example.com/blog/marketing-trends',
+    'https://example.com/portfolio/project-11',
+    'https://example.com/about-us',
+    'https://example.com/portfolio/project-12',
+    'https://example.com/contact',
+    'https://example.com/portfolio/project-13',
+    'https://example.com/blog/web-design-tips',
+    'https://example.com/portfolio/project-14',
+    'https://example.com/services/branding',
+    'https://example.com/portfolio/project-15',
+    'https://example.com/testimonials',
+    'https://example.com/portfolio/project-16',
+    'https://example.com/get-quote',
+];
+
 let originalPositions = [];
 let centerImage = null;
 let sectionOnePinned = false;
 let animationComplete = false;
 let infinityShiftComplete = false;
 
-// Create and append images at random initial positions
-imgSrcs.forEach(src => {
+// Create and append images at random initial positions with links
+imgSrcs.forEach((src, index) => {
+    // Create anchor tag
+    const link = document.createElement('a');
+    link.href = imgLinks[index] || '#';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.classList.add('img-link');
+
+    // Create image
     const img = document.createElement('img');
     img.src = src;
     img.classList.add('img-item');
     img.style.top = `${Math.random() * 80 + 5}vh`;
     img.style.left = `${Math.random() * 90 + 2}vw`;
-    infinityContainer.appendChild(img);
+
+    // Add click prevention during animations
+    link.addEventListener('click', (e) => {
+        // Prevent navigation during repel animation or transitions
+        if (img.classList.contains('flip-active') || img.dataset.transitioning === 'true') {
+            e.preventDefault();
+            return false;
+        }
+
+        // Prevent navigation if animation is not complete
+        if (!animationComplete) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Wrap image in link
+    link.appendChild(img);
+    infinityContainer.appendChild(link);
 });
 
 const images = [...document.querySelectorAll('.img-item')];
@@ -72,7 +132,7 @@ function initializeSectionPinning() {
                 if (scrollIndicator) {
                     scrollIndicator.classList.remove('show');
                 }
-        
+
                 // Unpin when animation is complete and user tries to scroll
                 self.kill();
                 enableScrollTransition();
@@ -195,7 +255,7 @@ function formInfinityShape() {
         // Complete animation sequence and show scroll indicator
         setTimeout(() => {
             scrollIndicator.classList.add('show');
-            
+
             // Mark animation as complete after text reveal
             setTimeout(() => {
                 animationComplete = true;
@@ -206,7 +266,7 @@ function formInfinityShape() {
 
                 // REMOVED: Layout shifting functionality
                 // The header will now overlay without affecting layout
-                
+
             }, 1000); // Wait 1 second after scroll indicator shows
         }, 4000); // Adjusted timing to account for earlier shift
     }, 4000);
@@ -215,7 +275,7 @@ function formInfinityShape() {
 // NEW FUNCTION: Smoothly shift the entire infinity shape downward
 function shiftInfinityShapeDown() {
     const shiftDistance = window.innerHeight * 0.1; // Shift down by 30% of viewport height
-    
+
     // Create a GSAP timeline for smooth coordinated movement
     const shiftTimeline = gsap.timeline({
         ease: "power2.inOut",
@@ -225,20 +285,20 @@ function shiftInfinityShapeDown() {
         },
         onComplete: () => {
             infinityShiftComplete = true;
-            
+
             // Re-enable interactions
             infinityContainer.style.pointerEvents = 'auto';
-            
+
             // Update original positions for repel effect
             images.forEach((img, idx) => {
                 const rect = img.getBoundingClientRect();
                 const containerRect = infinityContainer.getBoundingClientRect();
                 originalPositions[idx] = {
-                    x: rect.left + rect.width/2 - containerRect.left,
-                    y: rect.top + rect.height/2 - containerRect.top
+                    x: rect.left + rect.width / 2 - containerRect.left,
+                    y: rect.top + rect.height / 2 - containerRect.top
                 };
             });
-            
+
             // REMOVED: ScrollTrigger.refresh() that was causing layout shift
         }
     });
@@ -266,12 +326,12 @@ function shiftInfinityShapeDown() {
         ease: "power1.inOut",
         stagger: 0.03
     }, 0.2)
-    .to(images, {
-        opacity: 1,
-        duration: 1.0,
-        ease: "power1.inOut",
-        stagger: 0.02
-    }, 1.0);
+        .to(images, {
+            opacity: 1,
+            duration: 1.0,
+            ease: "power1.inOut",
+            stagger: 0.02
+        }, 1.0);
 }
 
 // Animate the top text split reveal with word-by-word animation
@@ -299,7 +359,7 @@ function animateSplitText(textElement) {
 
         // Set the word content directly (no letter splitting)
         spanWrapper.textContent = word;
-        
+
         firstLineDiv.appendChild(spanWrapper);
         allWords.push(spanWrapper);
     });
@@ -512,6 +572,9 @@ function initializeSecondSection() {
     const circle = document.querySelector('.circle-ring');
     const text = document.querySelector('.center-text');
     const sectionTwo = document.querySelector('#section-two');
+    const video = document.querySelector('.center-video');
+    const videoOverlay = document.querySelector('.video-overlay');
+    const playButton = document.getElementById('magneticPlayButton');
 
     // Define precise target positions for a balanced spread
     const targetPositions = [
@@ -531,17 +594,10 @@ function initializeSecondSection() {
         scrollTrigger: {
             trigger: sectionTwo,
             start: "top top",
-            end: "+=100vh",
-            scrub: 1,
+            end: "+=300vh",
+            scrub: 2.5,
             pin: ".dm-zoom-reveal-wrapper-2",
             anticipatePin: 1,
-            onUpdate: self => {
-                // Optional: Add dynamic effects based on scroll progress
-                const progress = self.progress;
-                if (progress > 0.8) {
-                    // Near end of animation
-                }
-            }
         }
     });
 
@@ -563,19 +619,19 @@ function initializeSecondSection() {
             zIndex: 10 + i,
             x: targetPositions[i].x,
             y: targetPositions[i].y,
-        }, 0.5 + i * 0.4); // Staggered appearance
+        }, 0.5 + i * 0.4);
     });
 
     // Phase 3: Images move further out and scale up (2-5s)
     imgs.forEach((img, i) => {
         const pos = targetPositions[i];
-        const factor = 3.5; // How far they move out
+        const factor = 3.5;
 
         tl.to(img, {
             duration: 1,
             x: pos.x * factor,
             y: pos.y * factor,
-            scale: 1.15 + i * 0.1, // Slight scale variation
+            scale: 1.15 + i * 0.1,
             ease: "power4.in",
             opacity: 1,
             filter: "blur(0px)",
@@ -596,6 +652,201 @@ function initializeSecondSection() {
         duration: 0.8,
         ease: "power1.out",
     }, 4.5);
+
+    // Phase 6: Video animation (5s - end)
+    tl.to(video, {
+        opacity: 1,
+        scale: 0.5,
+        filter: "blur(10px)",
+        duration: 0.8,
+        ease: "power2.out",
+    }, 5.0);
+
+    tl.to(video, {
+        scale: 1.5,
+        filter: "blur(5px)",
+        duration: 1.0,
+        ease: "power2.inOut",
+    }, 5.8);
+
+    tl.to(video, {
+        scale: 1.5,
+        filter: "blur(2px)",
+        width: "100%",
+        height: "100%",
+        duration: 1.5,
+        ease: "power2.in",
+    }, 6.8);
+
+    // NEW: Phase 7: Show video overlay with magnetic play button (7.5s)
+    tl.to(videoOverlay, {
+        opacity: 1,
+        duration: 1.2,
+        ease: "power2.out",
+        onComplete: () => {
+            // Initialize magnetic effect after overlay is visible
+            initMagneticPlayButton();
+        }
+    }, 7.5);
+
+    tl.to(video, {
+        scale: 1.6,
+        filter: "blur(5px)",
+        duration: 0.7,
+        ease: "power2.inOut",
+    }, 8.3);
+
+    // MAGNETIC PLAY BUTTON FUNCTIONALITY
+    // MAGNETIC PLAY BUTTON FUNCTIONALITY - Replace the existing initMagneticPlayButton function
+function initMagneticPlayButton() {
+    const videoOverlay = document.getElementById('videoOverlay');
+    const playButton = document.getElementById('playButton');
+    
+    console.log('Initializing magnetic button...', { videoOverlay, playButton });
+    
+    if (!videoOverlay || !playButton) {
+        console.error('Video overlay or play button not found!');
+        return;
+    }
+
+    const magneticStrength = 0.4;
+    const magneticRadius = 200;
+    let isHovering = false;
+    let animationId = null;
+
+    function updateMagneticEffect(e) {
+        // Get the overlay's bounding rectangle
+        const rect = videoOverlay.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // Get mouse position
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        // Calculate distance from mouse to center
+        const deltaX = mouseX - centerX;
+        const deltaY = mouseY - centerY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        if (distance < magneticRadius) {
+            // Mouse is within magnetic field
+            const strength = (magneticRadius - distance) / magneticRadius;
+            const moveX = deltaX * strength * magneticStrength;
+            const moveY = deltaY * strength * magneticStrength;
+            
+            // Apply magnetic movement
+            gsap.to(playButton, {
+                x: moveX,
+                y: moveY,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+            
+            // Scale up on hover
+            if (!isHovering) {
+                isHovering = true;
+                gsap.to(playButton, {
+                    scale: 1.1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+                
+                // Add glow effect
+                gsap.to(playButton, {
+                    boxShadow: "0 0 30px rgba(255, 255, 255, 0.5)",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        } else {
+            // Mouse is outside magnetic field - reset
+            if (isHovering) {
+                resetButton();
+            }
+        }
+    }
+
+    function resetButton() {
+        isHovering = false;
+        gsap.to(playButton, {
+            x: 0,
+            y: 0,
+            scale: 1,
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+            duration: 0.5,
+            ease: "power2.out"
+        });
+    }
+
+    function handlePlayButtonClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Play button clicked!');
+        
+        // Disable magnetic effect
+        videoOverlay.removeEventListener('mousemove', updateMagneticEffect);
+        videoOverlay.removeEventListener('mouseleave', resetButton);
+        
+        // Add click animation
+        gsap.to(playButton, {
+            scale: 0.9,
+            duration: 0.1,
+            ease: "power2.out",
+            onComplete: () => {
+                gsap.to(playButton, {
+                    scale: 1,
+                    duration: 0.2,
+                    ease: "power2.out"
+                });
+            }
+        });
+        
+        // Fade out overlay with delay
+        setTimeout(() => {
+            gsap.to(videoOverlay, {
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out",
+                onComplete: () => {
+                    videoOverlay.style.pointerEvents = 'none';
+                    videoOverlay.style.display = 'none';
+                }
+            });
+        }, 500);
+    }
+
+    // Initialize immediately - don't wait for complex animations
+    setTimeout(() => {
+        // Make sure overlay is visible
+        videoOverlay.style.opacity = '1';
+        videoOverlay.style.pointerEvents = 'auto';
+        
+        // Add event listeners
+        videoOverlay.addEventListener('mousemove', updateMagneticEffect);
+        videoOverlay.addEventListener('mouseleave', resetButton);
+        playButton.addEventListener('click', handlePlayButtonClick);
+        
+        console.log('Magnetic effect activated!');
+        
+        // Optional: Add entrance animation for play button
+        gsap.fromTo(playButton, 
+            { 
+                scale: 0, 
+                opacity: 0 
+            },
+            { 
+                scale: 1, 
+                opacity: 1, 
+                duration: 0.6, 
+                ease: "back.out(1.7)" 
+            }
+        );
+        
+    }, 500); // Small delay to ensure elements are ready
+}
+    
 }
 
 // ===== THIRD SECTION: SERVICES TEXT REVEAL ANIMATION =====
@@ -743,13 +994,13 @@ function startCounters() {
             if (current < target) {
                 current += increment;
                 if (current > target) current = target;
-                
+
                 if (target === 100) {
                     counter.textContent = Math.ceil(current) + '%';
                 } else {
                     counter.textContent = Math.ceil(current) + '+';
                 }
-                
+
                 requestAnimationFrame(updateCounter);
             } else {
                 counter.textContent = target + suffix;
@@ -811,7 +1062,7 @@ function initializeCircleRingAnimation() {
             allCircles.forEach((circle, index) => {
                 // Each circle scales differently based on scroll
                 const scaleAmount = 0.9 + Math.sin(progress * Math.PI * 3 + index) * 0.15;
-                gsap.set(circle, { 
+                gsap.set(circle, {
                     scale: scaleAmount,
                     rotation: progress * 20 * (index + 1)
                 });
@@ -820,17 +1071,21 @@ function initializeCircleRingAnimation() {
     });
 }
 
-// Call the function after the page loads
-window.onload = () => {
 
+window.onload = () => {
     // Hide header immediately when page loads to give full space for animation
     const header = document.querySelector('.header');
     header.classList.add('hidden');
 
+    // Initialize all existing animations
     initializeCircleRingAnimation();
     reenableScrollIndicatorOnScrollUp();
-
     initializeSectionPinning();
     fadeInImages();
     initializeServicesAnimation();
+
+    // Optional: Add a small delay to ensure all elements are loaded
+    setTimeout(() => {
+        ScrollTrigger.refresh();
+    }, 100);
 };
