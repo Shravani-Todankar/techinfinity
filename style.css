@@ -694,7 +694,7 @@ section.section-three {
     fill: none;
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
-    transition: stroke-dashoffset 0.4s ease-out;
+    transition: stroke-dashoffset 4s ease-out;
 }
 
 
