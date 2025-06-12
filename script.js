@@ -594,7 +594,7 @@ function initializeSecondSection() {
         scrollTrigger: {
             trigger: sectionTwo,
             start: "top top",
-            end: "+=500vh",
+            end: "+=300vh",
             scrub: 2.5,
             pin: ".dm-zoom-reveal-wrapper-2",
             anticipatePin: 1,
@@ -1071,11 +1071,308 @@ function initializeCircleRingAnimation() {
     });
 }
 
+// svg line animation
+// SVG Scroll Animation Script
+function initSVGAnimation() {
+    const svgSection = document.querySelector('.section-three');
+    const svgPaths = document.querySelectorAll('.svg-line path');
+    
+    // Calculate total path length for each path
+    svgPaths.forEach(path => {
+        const pathLength = path.getTotalLength();
+        path.style.strokeDasharray = pathLength;
+        path.style.strokeDashoffset = pathLength;
+    });
+    
+    function updateSVGAnimation() {
+        const sectionTop = svgSection.offsetTop;
+        const sectionHeight = svgSection.offsetHeight;
+        const scrollTop = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        
+        // Calculate when section starts and ends being visible
+        const sectionStart = sectionTop - windowHeight;
+        const sectionEnd = sectionTop + sectionHeight;
+        
+        // Calculate scroll progress within the section
+        let scrollProgress = 0;
+        
+        if (scrollTop >= sectionStart && scrollTop <= sectionEnd) {
+            scrollProgress = (scrollTop - sectionStart) / (sectionEnd - sectionStart);
+            scrollProgress = Math.max(0, Math.min(1, scrollProgress));
+        }
+        
+        // Apply animation to each path
+        svgPaths.forEach(path => {
+            const pathLength = path.getTotalLength();
+            const drawLength = pathLength * scrollProgress;
+            path.style.strokeDashoffset = pathLength - drawLength;
+        });
+    }
+    
+    // Initial call
+    updateSVGAnimation();
+    
+    // Update on scroll
+    window.addEventListener('scroll', updateSVGAnimation);
+    
+    // Update on resize
+    window.addEventListener('resize', updateSVGAnimation);
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', initSVGAnimation);
+
+
+// section-six animation
+const imageData = [
+    { src: 'https://picsum.photos/60/70?random=1', alt: 'Mountain landscape' },
+    { src: 'https://picsum.photos/60/70?random=2', alt: 'Forest path' },
+    { src: 'https://picsum.photos/60/70?random=3', alt: 'Ocean waves' },
+    { src: 'https://picsum.photos/60/70?random=4', alt: 'City skyline' },
+    { src: 'https://picsum.photos/60/70?random=5', alt: 'Desert landscape' },
+    { src: 'https://picsum.photos/60/70?random=6', alt: 'Cherry blossoms' },
+    { src: 'https://picsum.photos/60/70?random=7', alt: 'Northern lights' },
+    { src: 'https://picsum.photos/60/70?random=8', alt: 'Lake reflection' },
+    { src: 'https://picsum.photos/60/70?random=9', alt: 'Snowy mountains' },
+    { src: 'https://picsum.photos/60/70?random=10', alt: 'Canyon vista' },
+    { src: 'https://picsum.photos/60/70?random=11', alt: 'Sunset beach' },
+    { src: 'https://picsum.photos/60/70?random=12', alt: 'Waterfall cascade' },
+    { src: 'https://picsum.photos/60/70?random=13', alt: 'Tropical paradise' },
+    { src: 'https://picsum.photos/60/70?random=14', alt: 'Mountain peak' },
+    { src: 'https://picsum.photos/60/70?random=15', alt: 'River valley' },
+    { src: 'https://picsum.photos/60/70?random=16', alt: 'Starry night' },
+    { src: 'https://picsum.photos/60/70?random=17', alt: 'Golden hour' },
+    { src: 'https://picsum.photos/60/70?random=18', alt: 'Rocky coastline' },
+    { src: 'https://picsum.photos/60/70?random=19', alt: 'Alpine lake' },
+    { src: 'https://picsum.photos/60/70?random=20', alt: 'Forest canopy' },
+    { src: 'https://picsum.photos/60/70?random=21', alt: 'Ice formations' },
+    { src: 'https://picsum.photos/60/70?random=22', alt: 'Volcanic landscape' },
+    { src: 'https://picsum.photos/60/70?random=23', alt: 'Meadow flowers' },
+    { src: 'https://picsum.photos/60/70?random=24', alt: 'Desert dunes' }
+];
+
+// Register GSAP ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
+
+// Create images dynamically
+function createInfinityGallery() {
+    const infinityShape = document.getElementById('infinityShape');
+    
+    imageData.forEach((imageInfo, index) => {
+        const imageItem = document.createElement('div');
+        imageItem.className = 'infinity-image-item';
+        
+        const img = document.createElement('img');
+        img.src = imageInfo.src;
+        img.alt = imageInfo.alt;
+        img.loading = 'lazy';
+        
+        imageItem.appendChild(img);
+        infinityShape.appendChild(imageItem);
+    });
+}
+
+// GSAP Infinity Line Animation
+
+function initializeGSAPAnimation() {
+    const imageItems = document.querySelectorAll('.infinity-image-item');
+    const infinityShape = document.querySelector('.infinity-shape');
+    
+    // Ensure everything is completely hidden initially
+    gsap.set(infinityShape, { opacity: 0 });
+    gsap.set(imageItems, { opacity: 0, scale: 0, visibility: "hidden" });
+    
+    // Create ScrollTrigger for the infinity animation - FIXED TRIGGER POINT
+    ScrollTrigger.create({
+        trigger: ".section-six", // Keep original trigger
+        start: "center bottom", // Start when center of section reaches bottom of viewport
+        end: "+150vh", // Keep original end point
+        scrub: 0.5, 
+        onEnter: () => {
+            gsap.to(infinityShape, { opacity: 1, duration: 0.3 });
+        },
+        onUpdate: self => {
+            const progress = self.progress;
+            
+            imageItems.forEach((item, index) => {
+                // Keep original calculation that was working
+                const imageProgress = Math.max(0, Math.min(1, (progress * 50 - index * 0.8)));
+                
+                if (imageProgress > 0) {
+                    gsap.set(item, { visibility: "visible" });
+                    gsap.to(item, {
+                        opacity: imageProgress,
+                        scale: imageProgress,
+                        duration: 0.15,
+                        ease: "power3.out"
+                    });
+                } else {
+                    gsap.set(item, { visibility: "hidden" });
+                    gsap.to(item, {
+                        opacity: 0,
+                        scale: 0,
+                        duration: 0.15 
+                    });
+                }
+            });
+        }
+    });
+}
+
+// Smooth parallax effect
+function initializeParallax() {
+    gsap.to(".section-six", {
+        yPercent: -50,
+        ease: "none",
+        scrollTrigger: {
+            trigger: ".section-six",
+            start: "top bottom",
+            end: "+300vh",
+            scrub: 0.5
+        }
+    });
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    createInfinityGallery();
+    
+    setTimeout(() => {
+        initializeGSAPAnimation();
+        initializeParallax();
+    }, 50);
+});
+
+// Add error handling for images
+window.addEventListener('load', () => {
+    const imageItems = document.querySelectorAll('.infinity-image-item img');
+    
+    imageItems.forEach((img, index) => {
+        img.addEventListener('error', () => {
+            console.log(`Failed to load image at index ${index}`);
+        });
+    });
+});
+
+
+// Form functionality
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Simple validation
+    if (!data.name || !data.email || !data.requirements) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    
+    // Simulate form submission
+    const submitBtn = this.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
+    
+    setTimeout(() => {
+        alert('Thank you! Your message has been submitted successfully.');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        // Reset form except pre-filled values
+        document.getElementById('requirements').value = '';
+    }, 1500);
+});
+
+// Add smooth focus animations
+const inputs = document.querySelectorAll('input, textarea');
+inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+    });
+    
+    input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+    });
+});
+
+
+// go to top functionality
+// Get the button element
+const goToTopBtn = document.getElementById('goToTopBtn');
+        
+// Track scroll position and show/hide button
+let isScrolling = false;
+
+function handleScroll() {
+    if (!isScrolling) {
+        window.requestAnimationFrame(() => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Show button when scrolled down 300px
+            if (scrollTop > 300) {
+                goToTopBtn.classList.add('visible');
+            } else {
+                goToTopBtn.classList.remove('visible');
+            }
+            
+            isScrolling = false;
+        });
+        isScrolling = true;
+    }
+}
+
+// Smooth scroll to top function
+function scrollToTop() {
+    const scrollDuration = 800; // Duration in milliseconds
+    const scrollStep = -window.scrollY / (scrollDuration / 15);
+    
+    function smoothScroll() {
+        if (window.scrollY !== 0) {
+            window.scrollBy(0, scrollStep);
+            requestAnimationFrame(smoothScroll);
+        }
+    }
+    
+    smoothScroll();
+}
+
+// Alternative smooth scroll using built-in method (more modern)
+function smoothScrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Event listeners
+window.addEventListener('scroll', handleScroll);
+goToTopBtn.addEventListener('click', smoothScrollToTop);
+
+// Optional: Add keyboard support (Enter and Space)
+goToTopBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        smoothScrollToTop();
+    }
+});
+
 
 window.onload = () => {
     // Hide header immediately when page loads to give full space for animation
     const header = document.querySelector('.header');
     header.classList.add('hidden');
+
 
     // Initialize all existing animations
     initializeCircleRingAnimation();
